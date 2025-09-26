@@ -1,0 +1,61 @@
+@echo off
+chcp 65001
+title TREINAMENTO HAAR CASCADE - TUMORES PULMONARES
+
+echo ========================================
+echo    TREINAMENTO HAAR CASCADE
+echo ========================================
+echo.
+
+:: Navegar para pasta do projeto
+cd /d "C:\Users\Guilherme\Desktop\Computer_Vision_For_Health\Computer-vision-for-health"
+
+echo 📁 Pasta atual: %cd%
+echo.
+
+:: 1. Verificar e corrigir arquivos
+echo [1/4] Verificando arquivos de treinamento...
+python corrigir_info_dat.py
+
+if errorlevel 1 (
+    echo ❌ Erro na correção dos arquivos
+    pause
+    exit /b 1
+)
+
+:: 2. Criar arquivo .vec
+echo.
+echo [2/4] Criando arquivo positives.vec...
+"C:\opencv\build\x64\vc15\bin\opencv_createsamples.exe" -info info.dat -num 120 -w 512 -h 512 -vec positives.vec
+
+if not exist "positives.vec" (
+    echo ❌ Erro: positives.vec não foi criado
+    pause
+    exit /b 1
+)
+
+echo ✅ positives.vec criado com sucesso!
+echo.
+
+:: 3. Treinar classificador
+echo [3/4] Iniciando treinamento (pode demorar horas)...
+echo ⏳ Por favor, aguarde...
+echo.
+
+"C:\opencv\build\x64\vc15\bin\opencv_traincascade.exe" -data classifier -vec positives.vec -bg bg.txt -numPos 120 -numNeg 977 -numStages 10 -w 512 -h 512 -featureType HAAR
+
+:: 4. Verificar resultado
+if exist "classifier\cascade.xml" (
+    echo.
+    echo 🎉 TREINAMENTO CONCLUÍDO COM SUCESSO!
+    echo 📁 Classificador salvo em: classifier\cascade.xml
+    echo.
+    echo 📊 Para usar o classificador:
+    echo    classifier = cv2.CascadeClassifier('classifier/cascade.xml')
+    echo    objetos = classifier.detectMultiScale(imagem)
+) else (
+    echo.
+    echo ❌ Treinamento não produziu resultado
+)
+
+pause
