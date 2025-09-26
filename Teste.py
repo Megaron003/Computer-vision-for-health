@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import os
@@ -186,3 +187,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+=======
+import numpy as py
+
+for i in range(0, 10):
+    print(f"i, {10 - i}")
+
+print("Done")
+>>>>>>> eeaf442a1f5b0a47dcf49b7a06f4ed0bdba929c3

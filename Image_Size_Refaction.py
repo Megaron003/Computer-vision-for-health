@@ -2,14 +2,28 @@ from PIL import Image
 import os
 from pathlib import Path
 
+<<<<<<< HEAD
 def redimensionar_imagens_512x512(pasta_origem, pasta_destino, metodo_redimensionamento='preencher', cor_fundo='white'):
     """
     Redimensiona TODAS as imagens para exatamente 512x512 pixels
+=======
+def redimensionar_imagens_avancado(pasta_origem, pasta_destino, largura=512, altura=512, 
+                                 manter_proporcao=True, preencher_fundo=False, cor_fundo='white'):
+    """
+    Redimensiona imagens com opções avançadas
+>>>>>>> eeaf442a1f5b0a47dcf49b7a06f4ed0bdba929c3
     
     Args:
         pasta_origem (str): Pasta com imagens originais
         pasta_destino (str): Pasta para imagens redimensionadas
+<<<<<<< HEAD
         metodo_redimensionamento (str): 'preencher', 'cortar', ou 'distorcer'
+=======
+        largura (int): Largura desejada
+        altura (int): Altura desejada
+        manter_proporcao (bool): Se True, mantém proporção original
+        preencher_fundo (bool): Se True, preenche áreas vazias com cor de fundo
+>>>>>>> eeaf442a1f5b0a47dcf49b7a06f4ed0bdba929c3
         cor_fundo (str): Cor para preenchimento ('white', 'black', etc.)
     """
     
@@ -19,6 +33,7 @@ def redimensionar_imagens_512x512(pasta_origem, pasta_destino, metodo_redimensio
     # Extensões suportadas
     extensoes_suportadas = {'.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.webp', '.gif'}
     
+<<<<<<< HEAD
     # Tamanho fixo
     LARGURA = 512
     ALTURA = 512
@@ -26,10 +41,13 @@ def redimensionar_imagens_512x512(pasta_origem, pasta_destino, metodo_redimensio
     imagens_processadas = 0
     erros = 0
     
+=======
+>>>>>>> eeaf442a1f5b0a47dcf49b7a06f4ed0bdba929c3
     for arquivo in Path(pasta_origem).iterdir():
         if arquivo.is_file() and arquivo.suffix.lower() in extensoes_suportadas:
             try:
                 with Image.open(arquivo) as img:
+<<<<<<< HEAD
                     # Converter para RGB se necessário
                     if img.mode != 'RGB':
                         img = img.convert('RGB')
@@ -45,11 +63,20 @@ def redimensionar_imagens_512x512(pasta_origem, pasta_destino, metodo_redimensio
                     # Garantir que está exatamente 512x512
                     if img_redimensionada.size != (LARGURA, ALTURA):
                         img_redimensionada = img_redimensionada.resize((LARGURA, ALTURA), Image.Resampling.LANCZOS)
+=======
+                    if manter_proporcao:
+                        # Redimensionar mantendo proporção
+                        img_redimensionada = redimensionar_com_proporcao(img, largura, altura, preencher_fundo, cor_fundo)
+                    else:
+                        # Redimensionar forçando 512x512 (pode distorcer)
+                        img_redimensionada = img.resize((largura, altura), Image.Resampling.LANCZOS)
+>>>>>>> eeaf442a1f5b0a47dcf49b7a06f4ed0bdba929c3
                     
                     # Salvar imagem
                     caminho_destino = Path(pasta_destino) / f"{arquivo.stem}_512x512{arquivo.suffix}"
                     img_redimensionada.save(caminho_destino, optimize=True, quality=95)
                     
+<<<<<<< HEAD
                     print(f"✓ {arquivo.name} ({img.size[0]}x{img.size[1]}) → 512x512")
                     imagens_processadas += 1
                     
@@ -65,12 +92,23 @@ def redimensionar_imagens_512x512(pasta_origem, pasta_destino, metodo_redimensio
 def redimensionar_preenchendo(img, largura_alvo, altura_alvo, cor_fundo='white'):
     """
     Redimensiona mantendo proporção e preenche o restante com cor de fundo
+=======
+                    print(f"✓ {arquivo.name} → {caminho_destino.name}")
+                    
+            except Exception as e:
+                print(f"✗ Erro em {arquivo.name}: {e}")
+
+def redimensionar_com_proporcao(img, largura_alvo, altura_alvo, preencher=False, cor_fundo='white'):
+    """
+    Redimensiona imagem mantendo proporção
+>>>>>>> eeaf442a1f5b0a47dcf49b7a06f4ed0bdba929c3
     """
     # Calcular ratio de redimensionamento
     ratio = min(largura_alvo/img.width, altura_alvo/img.height)
     nova_largura = int(img.width * ratio)
     nova_altura = int(img.height * ratio)
     
+<<<<<<< HEAD
     # Redimensionar mantendo proporção
     img_redimensionada = img.resize((nova_largura, nova_altura), Image.Resampling.LANCZOS)
     
@@ -190,6 +228,45 @@ def main():
         redimensionar_imagens_512x512(pasta_origem, pasta_destino, metodo, cor_fundo)
     else:
         print("Operação cancelada.")
+=======
+    # Redimensionar
+    img_redimensionada = img.resize((nova_largura, nova_altura), Image.Resampling.LANCZOS)
+    
+    if preencher:
+        # Criar nova imagem com fundo
+        nova_imagem = Image.new('RGB', (largura_alvo, altura_alvo), cor_fundo)
+        # Centralizar a imagem redimensionada
+        x = (largura_alvo - nova_largura) // 2
+        y = (altura_alvo - nova_altura) // 2
+        nova_imagem.paste(img_redimensionada, (x, y))
+        return nova_imagem
+    else:
+        return img_redimensionada
+
+# Interface de uso
+def main():
+    print("=== REDIMENSIONADOR DE IMAGENS 512x512 ===")
+    
+    pasta_origem = input("Pasta com as imagens: ").strip()
+    pasta_destino = input("Pasta de destino: ").strip()
+    
+    if not pasta_destino:
+        pasta_destino = pasta_origem + "_redimensionadas"
+    
+    print("\nOpções de redimensionamento:")
+    print("1. Redimensionar forçando 512x512 (pode distorcer)")
+    print("2. Manter proporção e cortar para 512x512")
+    print("3. Manter proporção com fundo branco")
+    
+    opcao = input("Escolha (1/2/3) [padrão: 1]: ").strip()
+    
+    if opcao == "2":
+        redimensionar_imagens_avancado(pasta_origem, pasta_destino, manter_proporcao=True, preencher_fundo=False)
+    elif opcao == "3":
+        redimensionar_imagens_avancado(pasta_origem, pasta_destino, manter_proporcao=True, preencher_fundo=True)
+    else:
+        redimensionar_imagens_avancado(pasta_origem, pasta_destino, manter_proporcao=False)
+>>>>>>> eeaf442a1f5b0a47dcf49b7a06f4ed0bdba929c3
 
 if __name__ == "__main__":
     main()
